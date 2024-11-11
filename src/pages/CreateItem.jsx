@@ -1,5 +1,6 @@
-import React, { useReducer, useState } from 'react';
+import React, { useReducer, useState, useContext } from 'react';
 import "./CreateItem.css";
+import { ListItemContext } from '../Context/ListItemContext';
 import DisplayItem from './DisplayItem';
 
 const initialState = {
@@ -30,15 +31,20 @@ function reducer(state, action) {
 
 export default function CreateItem() {
     const [state, dispatch] = useReducer(reducer, initialState);
-    const [currentId, setCurrentId] = useState(1);
+    const [currentId, setCurrentId] = useState(0);
     const [items, setItems] = useState([]);
+    const { addItem } = useContext(ListItemContext);
+
+    
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const newItem = { ...state, id: currentId };
+        const newItem = { ...state, id: currentId+1 };
         console.log('submitting:', newItem);
         setItems([...items, newItem]);
+        addItem({...state, id: currentId });
         setCurrentId(currentId + 1);
+      
         dispatch({ type: 'RESET' });
     }
 
@@ -46,6 +52,16 @@ export default function CreateItem() {
         <>
             <h2>Create a new item</h2>
             <form className="Line_form" onSubmit={handleSubmit}>
+                <label>
+                    Id:
+                    <input
+                        type="number"
+                        value={currentId}
+                        onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'id', value: e.target.value })}
+                        required
+                    />
+                </label>
+
                 <label>
                     Task:
                     <input

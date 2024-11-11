@@ -6,7 +6,7 @@ export default function Nav() {
         <nav className="navbar">
             <ul className="nav-list">
                 <li className="nav-item">
-                    <Link to="/" className="nav-link">Home</Link>
+                    <Link to="/" className="nav-link">List</Link>
                 </li>
                 <li className="nav-item">
                     <Link to="/CreateItem" className="nav-link">Create Item</Link>

@@ -4,6 +4,7 @@ import CreateItem from './pages/CreateItem'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Nav from './components/Nav'
 import DisplayList from './pages/DisplayList';
+import { ListItemProvider } from './Context/ListItemContext';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -11,15 +12,17 @@ function App() {
   return (
     <>
 
-      <h2>To do list!</h2>
      
+      <ListItemProvider>
       <Router>
-      <Nav />
+        <h1>To do list!</h1>
+        <Nav />
         <Routes>
+          <Route path="/" element={<DisplayList />} />
           <Route path="/CreateItem" element={<CreateItem />} />
-          <Route path="/" element={<DisplayList/>} />
         </Routes>
       </Router>
+    </ListItemProvider>
       {/* <CreateItem /> */}
     </>
   )
