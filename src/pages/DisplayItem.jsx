@@ -12,7 +12,7 @@ const DisplayItem = () => {
                     .slice()
                     .sort((a, b) => b.id - a.id)
                     .map(item => (
-                        <li key={item.id}>
+                        <li key={item.id} className={item.Difficulty} >
                             {item.TaskName} - {item.description} - {item.Difficulty} - {item.Done ? 'Done' : 'Not Done'}
                         </li>
                     ))
@@ -24,3 +24,4 @@ const DisplayItem = () => {
 }
 
 export default DisplayItem;
+

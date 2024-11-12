@@ -16,9 +16,10 @@ function App() {
       <ListItemProvider>
       <Router>
         <h1>To do list!</h1>
+        
         <Nav />
         <Routes>
-          <Route path="/" element={<DisplayList />} />
+          <Route path="/" element={<DisplayList/>} />
           <Route path="/CreateItem" element={<CreateItem />} />
         </Routes>
       </Router>

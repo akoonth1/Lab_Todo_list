@@ -1,45 +1,7 @@
-// import { useContext } from 'react';
-// import { ListItemContext } from '../Context/ListItemContext'
-// import { useEffect } from 'react';
-// import initialState from '../utilities/data';
-// import { useReducer } from 'react';
 
-
-// export default function DisplayList() {
-//     const { listItems, removeItem, editItem } = useContext(ListItemContext);
-
-
-//     const { setListItems } = useContext(ListItemContext);
-
-    
-//     // Sort listItems from high to low based on Difficulty
-//     const sortedListItems = listItems.sort((a, b) => b.id - a.id);
-//     const toggleDone = (id) => {
-//         const item = listItems.find(item => item.id === id);
-//         if (item) {
-//             editItem(id, { Done: !item.Done });
-//         }
-//     };
-    
-//     return (
-//         <div>
-//             <h2>Items List</h2>
-//             <ul>
-//                 {sortedListItems && sortedListItems.map((item, index) => (
-//                     <li key={index}>
-//                         {item.TaskName} - {item.description} - {item.Difficulty}
-//                         <input type="checkbox" checked={item.Done }  onChange={() => toggleDone(item.id)}/>
-//                          <button onClick={() => removeItem(index)}  disabled={!item.Done}>Delete</button>
-//                          <button onClick={() => editItem(item.id, { ...item, Done: !item.Done })}>Edit</button>
-//                     </li>
-//                 ))}
-//             </ul>
-//         </div>
-//     );
-// }
-
-import React, { useContext, useReducer } from 'react';
+import React, { useContext, useReducer, useState, useEffect } from 'react';
 import { ListItemContext } from '../Context/ListItemContext';
+import './DisplayList.css';
 
 const initialState = {
     editingId: null,
@@ -69,6 +31,10 @@ function reducer(state, action) {
 export default function DisplayList() {
     const { listItems, removeItem, editItem } = useContext(ListItemContext);
     const [state, dispatch] = useReducer(reducer, initialState);
+    const [filter, setFilter] = useState({ difficulty: '', done: '', time: '', important: '' });
+    const [filteredListItems, setFilteredListItems] = useState([]);
+
+ 
 
     const toggleDone = (id) => {
         const item = listItems.find(item => item.id === id);
@@ -94,13 +60,69 @@ export default function DisplayList() {
     
     const sortedListItems = listItems.sort((a, b) => b.id - a.id);
 
+    
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilter({ ...filter, [name]: value });
+    };
+
+    // const filteredListItems = listItems
+    //     .filter(item => (filter.difficulty ? item.Difficulty === filter.difficulty : true))
+    //     .filter(item => (filter.done ? (filter.done === 'true' ? item.Done : !item.Done) : true))
+    //     .sort((a, b) => b.id - a.id);
+
+    useEffect(() => {
+        const filteredItems = listItems
+            .filter(item => (filter.difficulty ? item.Difficulty === filter.difficulty : true))
+            .filter(item => (filter.done ? (filter.done === 'true' ? item.Done : !item.Done) : true))
+            .filter(item => (filter.time ? (filter.done === 'false' ? item.Time : !item.Time) : true))
+            .filter(item => (filter.important ? (filter.important === 'true' ? item.Important : !item.Important) : true))
+            .sort((a, b) => b.id - a.id);
+        setFilteredListItems(filteredItems);
+    }, [listItems, filter]);
 
     return (
-        <div>
+
+          <div>
             <h2>Items List</h2>
-            <ul>
-            {sortedListItems && sortedListItems.map((item) => (
-                 <li key={item.id}>
+            <div className="filters">
+                <label>
+                    Difficulty:
+                    <select name="difficulty" value={filter.difficulty} onChange={handleFilterChange}>
+                        <option value="">All</option>
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </label>
+                <label>
+                    Done:
+                    <select name="done" value={filter.done} onChange={handleFilterChange}>
+                        <option value="">All</option>
+                        <option value="true">Done</option>
+                        <option value="false">Not Done</option>
+                    </select>
+                </label>
+                {/* <label>
+                    Time:
+                    <select name="time" value={filter.time} onChange={handleFilterChange}>
+                        <option value="">All</option>
+                        <option value="true">Time Sensitive</option>
+                        <option value="false">Not Time Sensitive</option>
+                    </select>
+                </label>
+                <label>
+                    Important:
+                    <select name="important" value={filter.important} onChange={handleFilterChange}>
+                        <option value="">All</option>
+                        <option value="true">Important</option>
+                        <option value="false">Not Important</option>
+                    </select>
+                </label>     */}
+            </div>
+            <ul className='List_item'>
+            {filteredListItems.map((item) =>(
+                 <li key={item.id} className={item.Difficulty}>
                         {state.editingId === item.id ? (
                             <>
                                 <input
@@ -113,12 +135,12 @@ export default function DisplayList() {
                             </>
                         ) : (
                             <>
-                                {item.TaskName} - {item.description} - {item.Difficulty}
+                                {item.TaskName} | {item.description} | {item.Difficulty}
                                 <input
                                     type="checkbox"
                                     checked={item.Done}
                                     onChange={() => toggleDone(item.id)}
-                                />
+                                /> {item.Done ? 'Done' : 'Not Done'}
                                 <button onClick={() => handleRemove(item.id)} disabled={!item.Done}>Delete</button>
                                 <button onClick={() => handleEdit(item.id, item.TaskName)}>Edit</button>
                             </>

@@ -1,0 +1,24 @@
+
+.List_item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;   
+    font-size: 1.2em; 
+    text-shadow: 1px 0px 1px #000;
+    padding: 1em;
+}
+
+
+.hard {
+    color: rgb(110, 5, 5);
+}
+
+.medium {
+    color: rgb(117, 117, 1);
+}
+.easy {
+    color: rgb(0, 99, 0);
+}
