@@ -3,23 +3,32 @@ import React, { useContext, useReducer, useState, useEffect } from 'react';
 import { ListItemContext } from '../Context/ListItemContext';
 import './DisplayList.css';
 
+// Initial state for the reducer
 const initialState = {
     editingId: null,
-    editedName: ''
+    editedName: '',
+    editedDescription: '',
 };
 
+// Reducer function
 function reducer(state, action) {
     switch (action.type) {
         case 'START_EDIT':
             return {
                 ...state,
                 editingId: action.id,
-                editedName: action.name
+                editedName: action.name,
+                editedDescription: action.description,
             };
         case 'SET_EDITED_NAME':
             return {
                 ...state,
-                editedName: action.name
+                editedName: action.name,
+            };
+        case 'SET_EDITED_DESCRIPTION':
+            return {
+                ...state,
+                editedDescription: action.description,
             };
         case 'STOP_EDIT':
             return initialState;
@@ -27,7 +36,6 @@ function reducer(state, action) {
             return state;
     }
 }
-
 export default function DisplayList() {
     const { listItems, removeItem, editItem } = useContext(ListItemContext);
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -43,14 +51,19 @@ export default function DisplayList() {
         }
     };
 
-    const handleEdit = (id, name) => {
-        dispatch({ type: 'START_EDIT', id, name });
+    const handleEdit = (id, name, description) => {
+        dispatch({ type: 'START_EDIT', id, name, description });
     };
 
+    
     const handleSave = (id) => {
-        editItem(id, { TaskName: state.editedName });
+        editItem(id, {
+            TaskName: state.editedName,
+            description: state.editedDescription,
+        });
         dispatch({ type: 'STOP_EDIT' });
     };
+
 
     const handleRemove = (id) => {  
         removeItem(id);
@@ -121,33 +134,62 @@ export default function DisplayList() {
                 </label>     */}
             </div>
             <ul className='List_item'>
-            {filteredListItems.map((item) =>(
-                 <li key={item.id} className={item.Difficulty}>
-                        {state.editingId === item.id ? (
-                            <>
-                                <input
-                                    type="text"
-                                    value={state.editedName}
-                                    onChange={(e) => dispatch({ type: 'SET_EDITED_NAME', name: e.target.value })}
-                                />
-                                <button onClick={() => handleSave(item.id)}>Save</button>
-                                <button onClick={() => dispatch({ type: 'STOP_EDIT' })}>Cancel</button>
-                            </>
-                        ) : (
-                            <>
-                                {item.TaskName} | {item.description} | {item.Difficulty}
-                                <input
-                                    type="checkbox"
-                                    checked={item.Done}
-                                    onChange={() => toggleDone(item.id)}
-                                /> {item.Done ? 'Done' : 'Not Done'}
-                                <button onClick={() => handleRemove(item.id)} disabled={!item.Done}>Delete</button>
-                                <button onClick={() => handleEdit(item.id, item.TaskName)}>Edit</button>
-                            </>
-                        )}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+            {filteredListItems.map((item) => (
+                <li key={item.id} className={item.Difficulty}>
+                    {state.editingId === item.id ? (
+                        <>
+                            <input
+                                type="text"
+                                value={state.editedName}
+                                onChange={(e) =>
+                                    dispatch({
+                                        type: 'SET_EDITED_NAME',
+                                        name: e.target.value,
+                                    })
+                                }
+                            />
+                            <input
+                                type="text"
+                                value={state.editedDescription}
+                                onChange={(e) =>
+                                    dispatch({
+                                        type: 'SET_EDITED_DESCRIPTION',
+                                        description: e.target.value,
+                                    })
+                                }
+                            />
+                            <button onClick={() => handleSave(item.id)}>Save</button>
+                            <button onClick={() => dispatch({ type: 'STOP_EDIT' })}>
+                                Cancel
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            {item.TaskName} | {item.description} | {item.Difficulty}
+                            <input
+                                type="checkbox"
+                                checked={item.Done}
+                                onChange={() => toggleDone(item.id)}
+                            />{' '}
+                            {item.Done ? 'Done' : 'Not Done'}
+                            <button
+                                onClick={() => handleRemove(item.id)}
+                                disabled={!item.Done}
+                            >
+                                Delete
+                            </button>
+                            <button
+                                onClick={() =>
+                                    handleEdit(item.id, item.TaskName, item.description)
+                                }
+                            >
+                                Edit
+                            </button>
+                        </>
+                    )}
+                </li>
+            ))}
+        </ul>
+    </div>
+);
 }
